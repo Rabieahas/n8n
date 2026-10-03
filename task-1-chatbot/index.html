@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>הצ׳אט של קפה הגליל</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="chat-shell">
+      <header>
+        <div class="brand">☕</div>
+        <div>
+          <h1>קפה הגליל</h1>
+          <p>העוזר שלנו כאן לשאלות על בית הקפה</p>
+        </div>
+      </header>
+
+      <section id="messages" class="messages" aria-live="polite">
+        <div class="message bot">
+          שלום! אני העוזר של קפה הגליל. במה אפשר לעזור?
+        </div>
+      </section>
+
+      <form id="chat-form">
+        <input
+          id="user-input"
+          autocomplete="off"
+          placeholder="כתבו הודעה…"
+          aria-label="הודעה"
+          required
+        >
+        <button type="submit">שליחה</button>
+      </form>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
