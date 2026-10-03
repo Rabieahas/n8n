@@ -1,0 +1,284 @@
+{
+  "name": "ברכת יום הולדת",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "birthday-greeting",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "964b75f1-8ed7-4c60-9640-45a63bda156b",
+      "name": "Webhook",
+      "webhookId": "3e3a58eb-41e5-43cf-aa50-ff526788cc82"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=כתוב ברכת יום הולדת קצרה, אישית וטבעית בעברית, באורך 4–5 משפטים.\n\nשם מקבל/ת הברכה: {{ $json.body.recipientName }}\nשם המברך/ת: {{ $json.body.senderName }}\nמין: {{ $json.body.gender }}\nנושאים אהובים: {{ $json.body.favoriteTopics }}\n\nכתוב למקבל/ת הברכה בלשון שמתאימה למין שצוין. שלב את הנושאים האהובים במפורש ובאופן טבעי. אל תוסיף תחביבים או פרטים שלא נמסרו, ואל תשתמש בדימויים מוגזמים. סיים ב״מזל טוב״ ובשם המברך/ת. החזר רק את הברכה, בלי כותרת ובלי הסברים.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "dbde4cdd-b8aa-4b9e-9ee0-ecd87fe176ed",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        208
+      ],
+      "id": "39412fc6-6b61-4987-a96b-a87baec97b15",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "v1kmkSIf5d2Vjmkj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"sent\", \"message\": \"הברכה נשלחה במייל ונשמרה ב-Airtable\", \"greeting\": $(\"AI Agent\").first().json.output } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1040,
+        16
+      ],
+      "id": "0fd68e57-8402-4776-82a1-9d331ec1ebae",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appvbcxXV1fKBVUwN",
+          "mode": "list",
+          "cachedResultName": "ברכת יום הולדת",
+          "cachedResultUrl": "https://airtable.com/appvbcxXV1fKBVUwN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblvC1csnbbdDFtpF",
+          "mode": "list",
+          "cachedResultName": "Greetings",
+          "cachedResultUrl": "https://airtable.com/appvbcxXV1fKBVUwN/tblvC1csnbbdDFtpF"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Recipient Name": "={{ $('Webhook').item.json.body.recipientName }}",
+            "Sender Name": "={{ $('Webhook').item.json.body.senderName }}",
+            "Gender": "={{ $('Webhook').item.json.body.gender.trim() }}",
+            "Favorite Topics": "={{ $('Webhook').item.json.body.favoriteTopics }}",
+            "Greeting": "={{ $('AI Agent').item.json.output }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Recipient Name",
+              "displayName": "Recipient Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Gender",
+              "displayName": "Gender",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Favorite Topics",
+              "displayName": "Favorite Topics",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Greeting",
+              "displayName": "Greeting",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        16
+      ],
+      "id": "2325ec7e-2d8a-40c0-8d13-2d3ad7ab74ef",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "028Ub61RYjwxAkXQ",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "=יום הולדת שמח, {{$json.fields[\"Recipient Name\"]}}!",
+        "textContent": "={{$json.fields.Greeting}}",
+        "sender": "rabieahasbani@gmail.com",
+        "receipients": "={{$json.fields.Email}}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.sendInBlue",
+      "typeVersion": 1,
+      "position": [
+        816,
+        16
+      ],
+      "id": "961cee97-c9cf-4ae1-bf18-02309f1542dc",
+      "name": "Send a transactional email",
+      "credentials": {
+        "sendInBlueApi": {
+          "id": "3uBUbMq8mJQGL8md",
+          "name": "Brevo account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a transactional email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a transactional email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "06e9c126-eb3f-424d-ad8b-6f875c1c7c16",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "19416e54fd72a7d5d2eaca2f1c492b178f5489dc86ab4447c2067c09ac4285aa"
+  },
+  "nodeGroups": [],
+  "id": "guoWUYmO3dhQmyiK",
+  "tags": []
+}
